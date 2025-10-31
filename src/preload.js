@@ -1,2 +1,6 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+// Preload script — provide safe minimal bridge if needed
+const { contextBridge } = require('electron');
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  hello: () => 'Hello from preload!'
+});

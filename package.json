@@ -34,6 +34,7 @@
     "@vitejs/plugin-react": "^5.1.0",
     "electron-squirrel-startup": "^1.0.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tabulator-tables": "^6.3.1"
   }
 }
