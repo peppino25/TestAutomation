@@ -6,6 +6,7 @@ export default function Home() {
   const [cell, setCell] = useState(null);
   const [tableName, setTableName] = useState(null);
   const [subtableName, setSubtableName] = useState(null);
+  const [punteggi, setPunteggi] = useState(null);
   const [form, setForm] = useState({ nome: "", cognome: "", punteggio: "" });
 
   function handleChange(e) {
@@ -14,6 +15,8 @@ export default function Home() {
   }
 
   useEffect(() => {
+    if (!cell) return;
+
     const patientInfo = {
       nome: form.nome,
       cognome: form.cognome,
@@ -47,7 +50,7 @@ export default function Home() {
         </label>
 
         <label>
-          Punteggio:
+          Punteggio Grezzo:
           <input
             name="punteggio"
             type="number"
@@ -57,20 +60,16 @@ export default function Home() {
         </label>
         
       </div>
-      <div>
+      <div className="table-wrapper">
         <Table onCellClick={(info) => {
           setSubtableName(info.subtableName);
           setTableName(info.tableName);
-          setCell(info.value);
+          setCell(info.cell);
+          setPunteggi(info.punteggi);
         }} />
-        {cell && (
-          <div className="cell-info">
-            <label>Età: {cell.getField().slice(3)} anni</label>
-            <label>Scolarità: {cell.getRow().getData().scolarità}</label>
-          </div>
-        )}
-
-
+        <div className="punteggi-container">
+          {cell ? <label>{typeof punteggi}</label> : <p>ciao</p>}
+        </div>
       </div>
     </div>
   );

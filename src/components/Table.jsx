@@ -4,12 +4,14 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import tablesJSON from "../../resources/tabelle_test.json";
 import Settingsjson from "../../resources/settings.json";
+import punteggiJSON from '../../resources/punteggi.json';
 import '../css/table.css';
 
 
 export default function Table({ onCellClick }) {
   // Nome del file JSON dei test e impostazioni
   const tableName = "tabelle_test.json";
+  const tabelleTest = punteggiJSON; 
   const settings = Settingsjson;
 
   // Referenza al container tabulator
@@ -23,6 +25,26 @@ export default function Table({ onCellClick }) {
     Object.keys(tablesJSON)[0] || null
   );
   const [selectedSubtable, setSelectedSubtable] = useState(null);
+  const [selectedCell, setSelectedCell] = useState(null);
+
+  const [currentPunteggi, setCurrentPunteggi] = useState(null);
+  const punteggiContainerRef = useRef(null);
+  const punteggiTableRef = useRef(null);
+
+  useEffect(() => {
+    if (!selectedTable) return;
+
+    const entry = tabelleTest[selectedTable];
+    if (!entry) {
+      setCurrentPunteggi(null);
+      return;
+    }
+    if (typeof entry === "object" && !Array.isArray(entry)) {
+      setCurrentPunteggi(selectedSubtable ? entry[selectedSubtable] : null);
+    } else {
+      setCurrentPunteggi(entry);
+    }
+  }, [selectedTable, selectedSubtable]);
 
   useEffect(() => {
     if (!selectedTable) return;
@@ -61,7 +83,7 @@ export default function Table({ onCellClick }) {
     tableRef.current = new Tabulator(containerRef.current, {
       height: "min-content",
       data: currentTable,
-      layout: "fitData",
+      layout: "fitDataTable",
       rowHeight: 40,
       placeholder: "No data available",
       columns: [
@@ -87,7 +109,8 @@ export default function Table({ onCellClick }) {
           cellClick: (e, cell) => {
             if(!isEditing) {
               if (onCellClick){
-                onCellClick({value: cell, tableName: selectedTable, subtableName: selectedSubtable});
+                onCellClick({cell: cell, tableName: selectedTable, subtableName: selectedSubtable, punteggi: currentPunteggi});
+                setSelectedCell(cell);
               }
             }
           },
@@ -107,6 +130,57 @@ export default function Table({ onCellClick }) {
       }
     };
   }, [isEditing, selectedTable, selectedSubtable]);
+
+  useEffect(() => {
+  if (!currentPunteggi || !punteggiContainerRef.current) return;
+
+  const tableData = Object.entries(currentPunteggi).map(([pe, range]) => ({
+    PE: pe,
+    Range: range,
+  }));
+
+  if (punteggiTableRef.current) {
+    punteggiTableRef.current.destroy();
+    punteggiTableRef.current = null;
+  }
+
+  punteggiTableRef.current = new Tabulator(punteggiContainerRef.current, {
+    data: tableData,
+    layout: "fitDataTable",
+    rowHeight: 40,
+    placeholder: "Nessun punteggio disponibile",
+    columns: [
+      {
+        title: "PE",
+        field: "PE",
+        width: 40,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+      },
+      {
+        title: "PG",
+        field: "Range",
+        width: 120,
+        hozAlign: "center",
+        headerHozAlign: "center",
+        headerSort: false,
+      },
+    ],
+    rowFormatter: (row) => {
+      const el = row.getElement();
+      const idx = row.getPosition();
+      el.style.background = idx % 2 ? "#f8f9fa" : "#ffffff";
+    },
+  });
+
+    return () => {
+      if (punteggiTableRef.current) {
+        punteggiTableRef.current.destroy();
+        punteggiTableRef.current = null;
+      }
+    };
+  }, [currentPunteggi]);
 
   // Reload automatico dei dati quando la tabella selezionata cambia
   useEffect(() => {
@@ -192,13 +266,19 @@ return (
             ⬇ Esporta
           </button> 
         </div> : null}
-
-        
+        {selectedCell ?
+          <div className="cell-info">
+            <label>Età: {selectedCell.getField().slice(3)} anni</label>
+            <label>Scolarità: {selectedCell.getRow().getData().scolarità}</label>
+          </div> : null}
       </div>
     </div>
 
     <div className="table-container">
       <div ref={containerRef} />
+    </div>
+    <div className="punteggi-section">
+      <div ref={punteggiContainerRef}></div>
     </div>
   </div>
 );
