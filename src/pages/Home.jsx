@@ -67,9 +67,6 @@ export default function Home() {
           setCell(info.cell);
           setPunteggi(info.punteggi);
         }} />
-        <div className="punteggi-container">
-          {cell ? <label>{typeof punteggi}</label> : <p>ciao</p>}
-        </div>
       </div>
     </div>
   );
