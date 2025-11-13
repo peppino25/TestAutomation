@@ -1,0 +1,91 @@
+:root {
+  --bg-dark: #0d1424;
+  --bg-accent: #0e3473;
+  --bg-accent-light: rgba(14, 52, 115, 0.95);
+  --text-main: #e8ecf4;
+  --text-muted: #a9b3c5;
+  --highlight: #5ccfe6;
+  --transition: 0.2s ease;
+  --radius: 8px;
+  --font-main: 'Inter', 'Segoe UI', sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-main);
+}
+
+.menu-bar {
+  background-color: var(--bg-accent-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-app-region: no-drag;
+}
+
+.button {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 14px;
+  padding-bottom: 4px;
+  transition: color var(--transition), border-color var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.button:hover {
+  color: var(--highlight);
+  border-color: var(--highlight);
+}
+
+.button.active {
+  color: var(--highlight);
+  border-color: var(--highlight);
+}
+
+.drag-bar {
+  height: 42px;
+  background: var(--bg-accent-light);
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--highlight);
+  user-select: none;
+}
+
+.window {
+  background: rgb(255, 255, 255);
+  width: 1000px;
+  height: 700px;
+  overflow: hidden;
+}
+
+.window-controls {
+  -webkit-app-region: no-drag;
+  display: flex;
+  gap: 10px;
+}
+
+.window-controls button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+.window-controls .close { background: #ff5f56; }
+.window-controls .minimize { background: #ffbd2e; }
+.window-controls .maximize { background: #27c93f; }
+

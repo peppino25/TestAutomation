@@ -7,5 +7,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   readJSON: (jsonFileName) => {
     return ipcRenderer.invoke('read-json-file', jsonFileName);
-  }
+  },
+  minimize: () => ipcRenderer.send('minimize'),
+  maximize: () => ipcRenderer.send('maximize'),
+  close: () => ipcRenderer.send('close')
 });

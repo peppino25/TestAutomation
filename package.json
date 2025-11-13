@@ -6,8 +6,8 @@
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "NODE_ENV=production electron-forge make",
+    "package": "NODE_ENV=production electron-forge package",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/cli": "^7.8.3",
     "@electron-forge/maker-deb": "^7.10.2",
     "@electron-forge/maker-rpm": "^7.10.2",
     "@electron-forge/maker-squirrel": "^7.10.2",
@@ -28,13 +28,15 @@
     "@electron-forge/plugin-vite": "^7.10.2",
     "@electron/fuses": "^1.8.0",
     "electron": "39.0.0",
-    "vite": "^5.4.21"
+    "vite": "^7.2.2"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.0",
     "electron-squirrel-startup": "^1.0.1",
+    "openai": "^6.8.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.5",
     "tabulator-tables": "^6.3.1"
   }
 }

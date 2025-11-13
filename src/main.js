@@ -1,28 +1,36 @@
-import { app, ipcMain } from "electron";
+import { app, ipcMain, BrowserWindow } from "electron";
 import fs from "fs";
 import path from "path";
 
-// Main process entry for Electron
-const { BrowserWindow } = require('electron');
+const isDev = process.env.NODE_ENV !== "production";
 
-const isDev = process.env.NODE_ENV !== 'production';
+// 🧠 Move win here so other functions can see it
+let win = null;
 
 function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1000,
     height: 700,
+    minHeight: 700,
+    minWidth: 1000,
+    frame: false,
+    resizable: false,
+    transparent: true,
+    backgroundColor: "#00000000",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      nodeIntegration: false
-    }
+      nodeIntegration: false,
+    },
   });
 
+  win.setMenu(null);
+
   if (isDev) {
-    win.loadURL('http://localhost:5173');
+    win.loadURL("http://localhost:5173");
     win.webContents.openDevTools();
   } else {
-    win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+    win.loadFile(path.join(__dirname, "..", "dist", "index.html"));
   }
 }
 
@@ -30,9 +38,8 @@ app.whenReady().then(() => {
   createWindow();
 
   function resolveResourcePath(jsonFileName) {
-  // Always sanitize filename to prevent directory traversal (security!)
-  const safeName = path.basename(jsonFileName);
-  return path.join(app.getAppPath(), "resources", safeName);
+    const safeName = path.basename(jsonFileName);
+    return path.join(app.getAppPath(), "resources", safeName);
   }
 
   ipcMain.handle("save-json-file", async (event, jsonFileName, newData) => {
@@ -59,13 +66,20 @@ app.whenReady().then(() => {
       return { success: false, error: err.message };
     }
   });
+
+  // 🧩 Now win is visible here
+  ipcMain.on("minimize", () => win.minimize());
+  ipcMain.on("maximize", () => {
+    if (win.isMaximized()) win.unmaximize();
+    else win.maximize();
+  });
+  ipcMain.on("close", () => win.close());
 });
 
-app.on('window-all-closed', () => {
-  // On macOS it's common for apps to stay open until user quits explicitly
-  if (process.platform !== 'darwin') app.quit();
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
