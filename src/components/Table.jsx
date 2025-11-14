@@ -8,7 +8,7 @@ import punteggiJSON from '../../resources/punteggi.json';
 import '../css/table.css';
 
 
-export default function Table({ onCellClick }) {
+export default function Table({ onCellClick, onChangeSend }) {
   // Nome del file JSON dei test e impostazioni
   const tableName = "tabelle_test.json";
   const tabelleTest = punteggiJSON; 
@@ -20,20 +20,20 @@ export default function Table({ onCellClick }) {
   const tableRef = useRef(null);
   // Stato per abilitare/disabilitare la modalità di modifica
   const [isEditing, setIsEditing] = useState(false);
+
   // Stato per la tabella e sottotabella selezionata
-  const [selectedTable, setSelectedTable] = useState(
-    Object.keys(tablesJSON)[0] || null
-  );
+  const initialTable = Object.keys(tablesJSON)[0];
+  const [selectedTable, setSelectedTable] = useState(initialTable);
   const [selectedSubtable, setSelectedSubtable] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
 
+  // Stato della tabella punteggi corrispondente alla tabella test selezionata
   const [currentPunteggi, setCurrentPunteggi] = useState(null);
-  const punteggiContainerRef = useRef(null);
-  const punteggiTableRef = useRef(null);
+  
+
 
   useEffect(() => {
     if (!selectedTable) return;
-
     const entry = tabelleTest[selectedTable];
     if (!entry) {
       setCurrentPunteggi(null);
@@ -44,7 +44,12 @@ export default function Table({ onCellClick }) {
     } else {
       setCurrentPunteggi(entry);
     }
-  }, [selectedTable, selectedSubtable]);
+    
+  }, [selectedTable, selectedSubtable, ]);
+
+  useEffect(() => {
+    onChangeSend(currentPunteggi);
+  }, [currentPunteggi])
 
   useEffect(() => {
     if (!selectedTable) return;
@@ -107,9 +112,9 @@ export default function Table({ onCellClick }) {
           editor: isEditing ? "input" : false,
           cellEdited: writeJSON,
           cellClick: (e, cell) => {
-            if(!isEditing) {
+            if(!isEditing && currentPunteggi) {
               if (onCellClick){
-                onCellClick({cell: cell, tableName: selectedTable, subtableName: selectedSubtable, punteggi: currentPunteggi});
+                onCellClick({cell: cell, tableName: selectedTable, subtableName: selectedSubtable});
                 setSelectedCell(cell);
               }
             }
@@ -131,56 +136,6 @@ export default function Table({ onCellClick }) {
     };
   }, [isEditing, selectedTable, selectedSubtable]);
 
-  useEffect(() => {
-  if (!currentPunteggi || !punteggiContainerRef.current) return;
-
-  const tableData = Object.entries(currentPunteggi).map(([pe, range]) => ({
-    PE: pe,
-    Range: range,
-  }));
-
-  if (punteggiTableRef.current) {
-    punteggiTableRef.current.destroy();
-    punteggiTableRef.current = null;
-  }
-
-  punteggiTableRef.current = new Tabulator(punteggiContainerRef.current, {
-    data: tableData,
-    layout: "fitDataTable",
-    rowHeight: 40,
-    placeholder: "Nessun punteggio disponibile",
-    columns: [
-      {
-        title: "PE",
-        field: "PE",
-        width: 40,
-        hozAlign: "center",
-        headerHozAlign: "center",
-        headerSort: false,
-      },
-      {
-        title: "PG",
-        field: "Range",
-        width: 120,
-        hozAlign: "center",
-        headerHozAlign: "center",
-        headerSort: false,
-      },
-    ],
-    rowFormatter: (row) => {
-      const el = row.getElement();
-      const idx = row.getPosition();
-      el.style.background = idx % 2 ? "#f8f9fa" : "#ffffff";
-    },
-  });
-
-    return () => {
-      if (punteggiTableRef.current) {
-        punteggiTableRef.current.destroy();
-        punteggiTableRef.current = null;
-      }
-    };
-  }, [currentPunteggi]);
 
   // Reload automatico dei dati quando la tabella selezionata cambia
   useEffect(() => {
@@ -276,9 +231,6 @@ return (
 
     <div className="table-container">
       <div ref={containerRef} />
-    </div>
-    <div className="punteggi-section">
-      <div ref={punteggiContainerRef}></div>
     </div>
   </div>
 );

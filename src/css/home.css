@@ -6,6 +6,15 @@
   font-family: var(--font-main);
 }
 
+.table-wrapper {
+  display: grid
+
+}
+
+.punteggi-table {
+  display: inline-flex;
+}
+
 .cell-info {
   display: flex;
   gap : 10px;

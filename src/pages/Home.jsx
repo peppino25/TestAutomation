@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Table from "../components/Table.jsx";
+import PTable from "../components/PTable.jsx";
 import "../css/home.css";
 
 export default function Home() {
@@ -60,13 +61,20 @@ export default function Home() {
         </label>
         
       </div>
+      
+
       <div className="table-wrapper">
-        <Table onCellClick={(info) => {
-          setSubtableName(info.subtableName);
-          setTableName(info.tableName);
-          setCell(info.cell);
-          setPunteggi(info.punteggi);
-        }} />
+        <div className="test-table">
+          <Table onCellClick={(info) => {
+            setSubtableName(info.subtableName);
+            setTableName(info.tableName);
+            setCell(info.cell);}}
+            onChangeSend={setPunteggi}/>
+        </div>
+        <div className="punteggi-table">
+          <PTable incoming_data={{punteggi: punteggi}}/>
+          
+        </div>
       </div>
     </div>
   );

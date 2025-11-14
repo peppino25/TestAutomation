@@ -1,0 +1,27 @@
+.tabulator {
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+
+.tabulator .tabulator-header {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.tabulator .tabulator-row {
+  transition: background-color 0.15s;
+}
+
+.tabulator .tabulator-cell {
+  padding: 8px 6px;
+}
+
+.tabulator-cell:hover {
+  background-color: rgb(223, 223, 223);
+}
+
