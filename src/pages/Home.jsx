@@ -10,10 +10,71 @@ export default function Home() {
   const [punteggi, setPunteggi] = useState(null);
   const [form, setForm] = useState({ nome: "", cognome: "", punteggio: "" });
 
+  const [punteggiArray, setPunteggiArray] = useState([]);
+  const [punteggioEquivalente, setPunteggioEquivalente] = useState(null);
+
   function handleChange(e) {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   }
+
+  useEffect(() => {
+    if (!punteggioEquivalente == null) return;
+    console.log("punteggioEquivalente:", punteggioEquivalente);
+
+  }, [punteggioEquivalente]);
+
+  useEffect(() => {
+    if (!punteggi) {
+      setPunteggiArray([]);
+      return;
+    }
+
+    const arr = Object.values(punteggi).map((item, i) => {
+      const [minStr, maxStr] = item.split("-");
+      const minimo = parseFloat(minStr);
+      const massimo = parseFloat(maxStr); // works for "41.70 ed oltre"
+
+      return {
+        livello: i,
+        minimo,
+        massimo,
+      };
+    });
+
+    setPunteggiArray(arr);
+  }, [punteggi]); 
+
+
+  useEffect(() => {
+    if (!cell) return;
+    if (!form.punteggio) return;
+
+    const punteggio = Number(form.punteggio);
+    let cellValue = String(cell.getValue()).trim();
+    let sign = cellValue.startsWith("-") ? "-" : "+";
+    if(sign === "-") cellValue = cellValue.slice(1);
+    const cellValueNum = parseFloat(cellValue);
+    const punteggioCorretto = sign === "-" ? punteggio - cellValueNum : punteggio + cellValueNum;
+
+    if (punteggioCorretto < 0){
+      setPunteggioEquivalente(0);
+      return;
+    };
+
+    for (const element of punteggiArray) {
+      if(punteggioCorretto >= element.minimo){
+        if(Number.isNaN(element.massimo)){
+            setPunteggioEquivalente(element.livello);
+            break;
+        }
+      } else {
+        setPunteggioEquivalente(element.livello - 1);
+        break;
+      }
+    }
+  }, [cell, form.punteggio])
+  
 
   useEffect(() => {
     if (!cell) return;
@@ -26,6 +87,15 @@ export default function Home() {
     }
 
   }, [cell, form]);
+
+  // Reset al cambio di test
+  useEffect(() => {
+    setForm({nome: "", cognome: "", punteggio: ""});
+    setPunteggioEquivalente(null);
+    setCell(null);
+
+  }, [tableName, subtableName])
+
 
   return (
     <div className="home-page">
@@ -69,11 +139,21 @@ export default function Home() {
             setSubtableName(info.subtableName);
             setTableName(info.tableName);
             setCell(info.cell);}}
-            onChangeSend={setPunteggi}/>
+            onChangeSend={(info) => {
+              setSubtableName(info.subtableName);
+              setTableName(info.tableName);
+              setPunteggi(info.punteggi);
+            }}/>
         </div>
         <div className="punteggi-table">
           <PTable incoming_data={{punteggi: punteggi}}/>
-          
+          <div>
+            {punteggioEquivalente && (
+              <label>
+                {punteggioEquivalente}
+              </label>
+            )}
+          </div>
         </div>
       </div>
     </div>

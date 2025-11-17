@@ -67,5 +67,5 @@ export default function PTable({ incoming_data }) {
         };
     }, [incoming_data]);
 
-    return <div ref={punteggiContainerRef} />;
+    return <div ref={punteggiContainerRef}/>;
 }

@@ -28,10 +28,10 @@ export default function Table({ onCellClick, onChangeSend }) {
   const [selectedCell, setSelectedCell] = useState(null);
 
   // Stato della tabella punteggi corrispondente alla tabella test selezionata
-  const [currentPunteggi, setCurrentPunteggi] = useState(null);
-  
+  const [currentPunteggi, setCurrentPunteggi] = useState({});
 
 
+  // Seleziona la tabella punteggi corrispondente al test
   useEffect(() => {
     if (!selectedTable) return;
     const entry = tabelleTest[selectedTable];
@@ -39,7 +39,9 @@ export default function Table({ onCellClick, onChangeSend }) {
       setCurrentPunteggi(null);
       return;
     }
-    if (typeof entry === "object" && !Array.isArray(entry)) {
+
+    // Array dei punteggi ordinario è di 5 valori (5 livelli, vedi punteggi.json)
+    if (typeof entry === "object" && Object.values(entry).length != 5) {
       setCurrentPunteggi(selectedSubtable ? entry[selectedSubtable] : null);
     } else {
       setCurrentPunteggi(entry);
@@ -48,7 +50,8 @@ export default function Table({ onCellClick, onChangeSend }) {
   }, [selectedTable, selectedSubtable, ]);
 
   useEffect(() => {
-    onChangeSend(currentPunteggi);
+    if(!currentPunteggi) return;
+    onChangeSend({punteggi: currentPunteggi, tableName: selectedTable, subtableName: selectedSubtable});
   }, [currentPunteggi])
 
   useEffect(() => {
@@ -171,6 +174,12 @@ export default function Table({ onCellClick, onChangeSend }) {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  useEffect(() => {
+    console.log(selectedCell);
+    setSelectedCell(null);
+
+  }, [selectedTable, selectedSubtable])
 
 return (
   <div className="table-page">

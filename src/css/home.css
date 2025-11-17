@@ -6,13 +6,8 @@
   font-family: var(--font-main);
 }
 
-.table-wrapper {
-  display: grid
-
-}
-
 .punteggi-table {
-  display: inline-flex;
+  display: flex;
 }
 
 .cell-info {
