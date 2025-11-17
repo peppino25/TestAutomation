@@ -61,11 +61,9 @@ export default function Table({ onCellClick, onChangeSend }) {
 
       if (typeof target === "object" && !Array.isArray(target)) {
         console.log(selectedTable);
-        // Tabella con sottotabelle → serve subtable valida
-        if (!selectedSubtable) return; // <— prevent accidental overwrite
+        if (!selectedSubtable) return; 
         target[selectedSubtable] = data;
       } else {
-        // Tabella semplice → salva direttamente
         tablesJSON[selectedTable] = data;
       }
 
@@ -232,7 +230,7 @@ return (
         </div> : null}
         {selectedCell ?
           <div className="cell-info">
-            <label>Età: {selectedCell.getField()} anni</label>
+            <label>Età: {selectedCell.getField().slice(3)} anni</label>
             <label>Scolarità: {selectedCell.getRow().getData().scolarità}</label>
           </div> : null}
       </div>

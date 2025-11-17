@@ -52,10 +52,10 @@ export default function PTable({ incoming_data }) {
     useEffect(() => {
         const table = punteggiTableRef.current;
         if (!table) return;
+
         if (!incoming_data || !incoming_data.punteggi) return;
 
         const currentPunteggi = incoming_data.punteggi;
-        console.log(currentPunteggi);
 
         const tableData = Object.entries(currentPunteggi).map(([pe, range]) => ({
             PE: pe,
