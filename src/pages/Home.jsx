@@ -20,7 +20,6 @@ export default function Home() {
 
   useEffect(() => {
     if (!punteggioEquivalente == null) return;
-    console.log("punteggioEquivalente:", punteggioEquivalente);
 
   }, [punteggioEquivalente]);
 
@@ -78,7 +77,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!cell) return;
-
+    
     const patientInfo = {
       nome: form.nome,
       cognome: form.cognome,
@@ -136,8 +135,6 @@ export default function Home() {
       <div className="table-wrapper">
         <div className="test-table">
           <Table onCellClick={(info) => {
-            setSubtableName(info.subtableName);
-            setTableName(info.tableName);
             setCell(info.cell);}}
             onChangeSend={(info) => {
               setSubtableName(info.subtableName);
@@ -147,13 +144,14 @@ export default function Home() {
         </div>
         <div className="punteggi-table">
           <PTable incoming_data={{punteggi: punteggi}}/>
-          <div>
-            {punteggioEquivalente && (
-              <label>
-                {punteggioEquivalente}
-              </label>
-            )}
-          </div>
+          {punteggioEquivalente != null && (
+            <div className="punteggio-final">
+              <h1 style={{marginTop: "0px"}}>Risultato</h1>
+              <div style={{backgroundColor: "cyan"}}>
+                <label>Punteggio Equivalente: {punteggioEquivalente}</label>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

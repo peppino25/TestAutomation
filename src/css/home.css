@@ -6,6 +6,14 @@
   font-family: var(--font-main);
 }
 
+.punteggio-final {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
 .punteggi-table {
   display: flex;
 }
