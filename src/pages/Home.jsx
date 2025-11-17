@@ -13,6 +13,7 @@ export default function Home() {
   const [punteggiArray, setPunteggiArray] = useState([]);
   const [punteggioEquivalente, setPunteggioEquivalente] = useState(null);
 
+  // Funzione che server per gestire gli input dei form
   function handleChange(e) {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -32,7 +33,7 @@ export default function Home() {
     const arr = Object.values(punteggi).map((item, i) => {
       const [minStr, maxStr] = item.split("-");
       const minimo = parseFloat(minStr);
-      const massimo = parseFloat(maxStr); // works for "41.70 ed oltre"
+      const massimo = parseFloat(maxStr);
 
       return {
         livello: i,
@@ -45,17 +46,22 @@ export default function Home() {
   }, [punteggi]); 
 
 
+  // useEffect che calcola il punteggio equivalente dato punteggio grezzo e valore della cella
   useEffect(() => {
     if (!cell) return;
     if (!form.punteggio) return;
 
     const punteggio = Number(form.punteggio);
     let cellValue = String(cell.getValue()).trim();
+    // Estrae il segno da cellValue
     let sign = cellValue.startsWith("-") ? "-" : "+";
+    // Rimuove il segno negativo da cellValue
     if(sign === "-") cellValue = cellValue.slice(1);
     const cellValueNum = parseFloat(cellValue);
+    // Calcola il punteggioCorretto, ovvero (punteggio grezzo - correzione)
     const punteggioCorretto = sign === "-" ? punteggio - cellValueNum : punteggio + cellValueNum;
 
+    // Evita che il punteggio equivalente sia negativo
     if (punteggioCorretto < 0){
       setPunteggioEquivalente(0);
       return;
@@ -77,7 +83,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!cell) return;
-    
+
     const patientInfo = {
       nome: form.nome,
       cognome: form.cognome,
