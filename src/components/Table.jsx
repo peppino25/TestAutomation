@@ -54,9 +54,26 @@ export default function Table({ onCellClick, onChangeSend }) {
     onChangeSend({punteggi: currentPunteggi, tableName: selectedTable, subtableName: selectedSubtable});
   }, [currentPunteggi])
 
-  useEffect(() => {
-    if (!selectedTable) return;
+  // Non utilizzato al momento
+  const writeJSON = async () => {
+      const data = tableRef.current.getData();
+      const target = tablesJSON[selectedTable];
 
+      if (typeof target === "object" && !Array.isArray(target)) {
+        console.log(selectedTable);
+        // Tabella con sottotabelle → serve subtable valida
+        if (!selectedSubtable) return; // <— prevent accidental overwrite
+        target[selectedSubtable] = data;
+      } else {
+        // Tabella semplice → salva direttamente
+        tablesJSON[selectedTable] = data;
+      }
+
+      const result = await window.electronAPI.saveJSON(tableName, tablesJSON);
+      if (!result.success) console.error("Error saving:", result.error);
+    };
+
+  useEffect(() => {
     const ageFormatter = (cell) => {
       const raw = String(cell.getValue() ?? "").trim();
       const parsed = parseFloat(raw.replace(/\+/g, ""));
@@ -68,29 +85,8 @@ export default function Table({ onCellClick, onChangeSend }) {
       return raw;
     };
 
-    const writeJSON = async () => {
-      const data = tableRef.current.getData();
-      
-
-      if (selectedSubtable) {
-        tablesJSON[selectedTable][selectedSubtable] = data;
-      } else {
-        tablesJSON[selectedTable] = data;
-      } 
-
-      const result = await window.electronAPI.saveJSON(tableName, tablesJSON);
-      if (!result.success) console.error("Error saving table data:", result.error);
-    };
-
-    const currentTable =
-      typeof tablesJSON[selectedTable] === "object" && !Array.isArray(tablesJSON[selectedTable])
-        ? tablesJSON[selectedTable][selectedSubtable] || []
-        : tablesJSON[selectedTable] || [];
-
-    // Initialize Tabulator
     tableRef.current = new Tabulator(containerRef.current, {
       height: "min-content",
-      data: currentTable,
       layout: "fitDataTable",
       rowHeight: 40,
       placeholder: "No data available",
@@ -104,7 +100,7 @@ export default function Table({ onCellClick, onChangeSend }) {
           headerSort: false,
           cellEdited: writeJSON,
         },
-        ...["20","25","30","35","40","45","50", "55", "60", "65", "70", "75", "80", "85"].map((age) => ({
+        ...["20","25","30","35","40","45","50","55","60","65","70","75","80","85"].map((age) => ({
           title: age,
           field: `age${age}`,
           width: 55,
@@ -112,14 +108,12 @@ export default function Table({ onCellClick, onChangeSend }) {
           headerSort: false,
           hozAlign: "center",
           headerHozAlign: "center",
-          editor: isEditing ? "input" : false,
+          editor: false,
           cellEdited: writeJSON,
           cellClick: (e, cell) => {
-            if(!isEditing && currentPunteggi) {
-              if (onCellClick){
-                onCellClick({cell: cell, tableName: selectedTable, subtableName: selectedSubtable});
-                setSelectedCell(cell);
-              }
+            if(!isEditing && currentPunteggi && onCellClick){
+              onCellClick({cell: cell, tableName: selectedTable, subtableName: selectedSubtable});
+              setSelectedCell(cell);
             }
           },
         })),
@@ -132,25 +126,32 @@ export default function Table({ onCellClick, onChangeSend }) {
     });
 
     return () => {
-      if (tableRef.current) {
-        tableRef.current.destroy();
-        tableRef.current = null;
-      }
+      tableRef.current?.destroy();
     };
-  }, [isEditing, selectedTable, selectedSubtable]);
+  }, []); 
 
+ useEffect(() => {
+  if (!tableRef.current) return;
 
-  // Reload automatico dei dati quando la tabella selezionata cambia
-  useEffect(() => {
-    if (tableRef.current && selectedTable) {
-      const currentTable =
-        typeof tablesJSON[selectedTable] === "object" && !Array.isArray(tablesJSON[selectedTable])
-          ? tablesJSON[selectedTable][selectedSubtable] || []
-          : tablesJSON[selectedTable] || [];
+  const currentTable =
+    typeof tablesJSON[selectedTable] === "object" && !Array.isArray(tablesJSON[selectedTable])
+      ? tablesJSON[selectedTable][selectedSubtable] || []
+      : tablesJSON[selectedTable] || [];
 
-      tableRef.current.replaceData(currentTable);
-    }
+  tableRef.current.replaceData(currentTable);
+
   }, [selectedTable, selectedSubtable]);
+
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    tableRef.current.getColumns().forEach((col) => {
+      if (col.getField().startsWith("age")) {
+        col.updateDefinition({ editor: isEditing ? "input" : false });
+      }
+    });
+
+  }, [isEditing]);
 
   // Controlla se la tabella selezionata ha sottotabelle (Come 15 parole di rey)
   useEffect(() => {
@@ -176,10 +177,9 @@ export default function Table({ onCellClick, onChangeSend }) {
   };
 
   useEffect(() => {
-    console.log(selectedCell);
     setSelectedCell(null);
 
-  }, [selectedTable, selectedSubtable])
+  }, [selectedSubtable, selectedTable])
 
 return (
   <div className="table-page">
@@ -232,7 +232,7 @@ return (
         </div> : null}
         {selectedCell ?
           <div className="cell-info">
-            <label>Età: {selectedCell.getField().slice(3)} anni</label>
+            <label>Età: {selectedCell.getField()} anni</label>
             <label>Scolarità: {selectedCell.getRow().getData().scolarità}</label>
           </div> : null}
       </div>
