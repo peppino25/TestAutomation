@@ -207,5 +207,28 @@
       "age80": "",
       "age85": ""
     }
+  ],
+
+  "Digit Span": {
+    "Forward": [
+
+    ],
+    "Backward": [
+
+    ]
+  },
+  "Corsi span (cubi)":{
+    "Uomini": [
+
+    ],
+    "Donne":[
+
+    ]
+  },
+  "Fluenze Semantiche (per categorie)": [
+
+  ],
+  "Fluenze Fonemiche (per lettera)": [
+
   ]
 }

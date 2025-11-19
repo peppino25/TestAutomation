@@ -33,11 +33,10 @@ function createWindow() {
     win.loadURL("http://localhost:5173");
     win.webContents.openDevTools();
   } else {
-    win.webContents.openDevTools();
-    win.loadFile(path.join(app.getAppPath(), "index.html"));
+    const indexPath = path.join(app.getAppPath(), ".vite", "renderer", "main_window", "index.html");
+    win.loadFile(indexPath);
   }
 }
-
 app.whenReady().then(() => {
   createWindow();
 

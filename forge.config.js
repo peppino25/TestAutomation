@@ -9,7 +9,7 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    { name: '@electron-forge/maker-dmg' },
+    { name: '@electron-forge/maker-squirrel', config: {} },
   ],
   plugins: [
     {
@@ -35,21 +35,5 @@ module.exports = {
         ],
       },
     },
-
-    // ✅ Fuses should only be applied in packaged apps, not during "start"
-    ...(process.env.MODE === 'production'
-      ?
-      [
-          new FusesPlugin({
-            version: FuseVersion.V1,
-            [FuseV1Options.RunAsNode]: false,
-            [FuseV1Options.EnableCookieEncryption]: true,
-            [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-            [FuseV1Options.EnableNodeCliInspectArguments]: false,
-            [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-            [FuseV1Options.OnlyLoadAppFromAsar]: true,
-          }),
-        ]
-      : []),
   ],
 };

@@ -47,7 +47,7 @@ export default function Table({ onCellClick, onChangeSend }) {
       setCurrentPunteggi(entry);
     }
     
-  }, [selectedTable, selectedSubtable, ]);
+  }, [selectedTable, selectedSubtable]);
 
   useEffect(() => {
     if(!currentPunteggi) return;
@@ -62,7 +62,7 @@ export default function Table({ onCellClick, onChangeSend }) {
       if (typeof target === "object" && !Array.isArray(target)) {
         console.log(selectedTable);
         if (!selectedSubtable) return; 
-        target[selectedSubtable] = data;
+        target[selectedTable][selectedSubtable] = data;
       } else {
         tablesJSON[selectedTable] = data;
       }
