@@ -16,5 +16,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   minimize: () => ipcRenderer.send('minimize'),
   maximize: () => ipcRenderer.send('maximize'),
-  close: () => ipcRenderer.send('close')
+  close: () => ipcRenderer.send('close'),
+  saveApiKey: (key) => ipcRenderer.invoke("save-api-key", key),
+  getApiKey: () => ipcRenderer.invoke("get-api-key")
 });

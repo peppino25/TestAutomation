@@ -1,9 +1,11 @@
 import { app, ipcMain, BrowserWindow, dialog } from "electron";
 import { checkForUpdates } from "./functions/updateChecker";
+import Store from "electron-store";
 import dotenv from "dotenv"
 import fs from "fs";
 import path from "path";
 
+const store = new Store({ encryptionKey: "antoninocannavacciuolo"});
 dotenv.config();
 
 const isDev = process.env.MODE === "development";
@@ -38,6 +40,7 @@ function createWindow() {
     win.loadFile(indexPath);
   }
 }
+
 app.whenReady().then(async () => {
   ipcMain.handle("get-app-version", () => {
     return app.getVersion();
@@ -47,9 +50,17 @@ app.whenReady().then(async () => {
     const updateInfo = await checkForUpdates(
     localVersion,
     user,
-    repo
-  )
+    repo)
   if(updateInfo) return updateInfo;
+  });
+
+  ipcMain.handle("save-api-key", (event, key) => {
+    store.set("apiKey", key);
+  });
+
+
+  ipcMain.handle("get-api-key", () => {
+    return store.get("apiKey", "");
   });
 
   createWindow();

@@ -1,6 +1,5 @@
 {
   "dev": false,
-  "aiusage": false,
-  "apikey": "",
+  "aiusage": true,
   "model": "gpt-5-nano"
 }
