@@ -110,7 +110,7 @@ export default function Table({ onCellClick, onChangeSend }) {
           cellEdited: writeJSON,
           cellClick: (e, cell) => {
             if(!isEditing && currentPunteggi && onCellClick){
-              onCellClick({cell: cell, tableName: selectedTable, subtableName: selectedSubtable});
+              onCellClick({cell: cell});
               setSelectedCell(cell);
             }
           },

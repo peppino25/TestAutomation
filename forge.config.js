@@ -1,5 +1,7 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+require("dotenv").config();
+
 
 module.exports = {
   packagerConfig: {
@@ -8,9 +10,6 @@ module.exports = {
   rebuildConfig: {},
   makers: [
     { name: '@electron-forge/maker-squirrel', config: {} },
-    { name: '@electron-forge/maker-zip', platforms: ['darwin'] },
-    { name: '@electron-forge/maker-deb', config: {} },
-    { name: '@electron-forge/maker-rpm', config: {} },
   ],
   plugins: [
     {
@@ -38,8 +37,9 @@ module.exports = {
     },
 
     // ✅ Fuses should only be applied in packaged apps, not during "start"
-    ...(process.env.NODE_ENV === 'production'
-      ? [
+    ...(process.env.MODE === 'production'
+      ?
+      [
           new FusesPlugin({
             version: FuseVersion.V1,
             [FuseV1Options.RunAsNode]: false,
