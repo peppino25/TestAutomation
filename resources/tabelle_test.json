@@ -16,7 +16,7 @@
         "age25": "-5.0",
         "age30": "-3.9",
         "age35": "-2.7",
-        "age45": "-0.1"
+        "age45": "-0.2"
       },
       {
         "scolarità": "8",
@@ -208,27 +208,14 @@
       "age85": ""
     }
   ],
-
   "Digit Span": {
-    "Forward": [
-
-    ],
-    "Backward": [
-
-    ]
+    "Forward": [],
+    "Backward": []
   },
-  "Corsi span (cubi)":{
-    "Uomini": [
-
-    ],
-    "Donne":[
-
-    ]
+  "Corsi span (cubi)": {
+    "Uomini": [],
+    "Donne": []
   },
-  "Fluenze Semantiche (per categorie)": [
-
-  ],
-  "Fluenze Fonemiche (per lettera)": [
-
-  ]
+  "Fluenze Semantiche (per categorie)": [],
+  "Fluenze Fonemiche (per lettera)": []
 }
