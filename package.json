@@ -6,7 +6,7 @@
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "cross-env electron-forge start",
-    "make": "electron-forge make",
+    "make": "cross-env electron-forge make",
     "package": "NODE_ENV=production electron-forge package",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
