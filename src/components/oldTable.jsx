@@ -13,9 +13,9 @@ export default function Table({ onCellClick, onChangeSend }) {
   const tabelleTest = punteggiJSON; 
   const settings = Settingsjson;
 
-  // Referenza al container tabulator
+  // Riferimento al container tabulator
   const containerRef = useRef(null);
-  // Referenza all'istanza di Tabulator
+  // Riferimento all'istanza di Tabulator
   const tableRef = useRef(null);
   // Stato per abilitare/disabilitare la modalità di modifica
   const [isEditing, setIsEditing] = useState(false);

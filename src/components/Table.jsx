@@ -10,10 +10,12 @@ import punteggiJson from '../../resources/punteggi.json';
 import '../css/table.css';
 
 export default function Table({ onCellClick ,onChangeSend }) {
-    // Referenza al container tabulator
+    // Riferimento al container tabulator
     const containerRef = useRef(null);
-    // Referenza all'istanza di Tabulator
+    // Riferimento all'istanza di Tabulator
     const tableRef = useRef(null);
+    // Riferimento 
+    const tableReadyRef = useRef(false);
 
     // Stato per la tabella e sottotabella selezionata
     const initialTable = Object.keys(testTable)[0];
@@ -29,7 +31,7 @@ export default function Table({ onCellClick ,onChangeSend }) {
     const subtableKeyRef = useRef(selectedSubtable);
     
     useEffect(() => { tableKeyRef.current = selectedTable }, [selectedTable]);
-      useEffect(() => { subtableKeyRef.current = selectedSubtable }, [selectedSubtable]);
+    useEffect(() => { subtableKeyRef.current = selectedSubtable }, [selectedSubtable]);
     
     const writeJSON = async () => {
         const data = tableRef.current.getData();
@@ -82,6 +84,14 @@ export default function Table({ onCellClick ,onChangeSend }) {
     useEffect(() => {
         const Formatter = (cell) => {
             const raw = String(cell.getValue() ?? "").trim();
+
+            if (raw === "----" || raw === "") {
+                const el = cell.getElement();
+                el.style.color = "#ff9900ff";
+                el.style.textAlign = "center";
+                el.style.fontWeight = "400";
+                return raw;  
+            }
             const parsed = parseFloat(raw.replace(/\+/g, ""));
             const num = Number.isNaN(parsed) ? 0 : parsed;
             const el = cell.getElement();
@@ -96,7 +106,7 @@ export default function Table({ onCellClick ,onChangeSend }) {
             layout: "fitDataTable",
             data: getData(selectedTable, selectedSubtable),
             rowHeight: 40,
-            placeholder: "No data available",
+            placeholder: "Nessun dato da visualizzare",
             columns: [
                 {
                 title: "E/S",
@@ -130,9 +140,11 @@ export default function Table({ onCellClick ,onChangeSend }) {
                 el.style.background = idx % 2 ? "#f8f9fa" : "#ffffff";
             },
             });
-            return () => {
-                tableRef.current?.destroy();
-            };
+
+            
+            tableRef.current.on("tableBuilt", () => {
+                tableReadyRef.current = true;
+            })
         }, []); 
 
 
@@ -140,6 +152,8 @@ export default function Table({ onCellClick ,onChangeSend }) {
     useEffect(() => {
         if (!tableRef.current) return;
         isEditingRef.current = isEditing;
+        // Imposta null nella cella selezionata dopo aver iniziato ad editare
+        setSelectedCell(null);
     
         tableRef.current.getColumns().forEach((col) => {
           if (col.getField().startsWith("age")) {
@@ -151,6 +165,7 @@ export default function Table({ onCellClick ,onChangeSend }) {
 
     // Aggiorna tabulator quando l'utente cambia la tabella o la sottotabella
     useEffect(() => {
+        if (!tableReadyRef.current) return;
         setSelectedCell(null);
         if (!tableRef.current) return;
         tableRef.current.replaceData(
