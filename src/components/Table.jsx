@@ -23,7 +23,32 @@ export default function Table({ onCellClick ,onChangeSend }) {
 
     // Stato per abilitare/disabilitare la modalità di modifica
     const [isEditing, setIsEditing] = useState(false);
+    const isEditingRef = useRef(false);
 
+    const tableKeyRef = useRef(selectedTable);
+    const subtableKeyRef = useRef(selectedSubtable);
+    
+    useEffect(() => { tableKeyRef.current = selectedTable }, [selectedTable]);
+      useEffect(() => { subtableKeyRef.current = selectedSubtable }, [selectedSubtable]);
+    
+    const writeJSON = async () => {
+        const data = tableRef.current.getData();
+
+        const tableKey = tableKeyRef.current;
+        const subKey = subtableKeyRef.current;
+
+        const target = testTable[tableKey];
+
+      if (typeof target === "object" && !Array.isArray(target)) {
+        target[subKey] = data;
+    } else {
+        testTable[tableKey] = data;
+    }
+
+        const result = await window.electronAPI.saveJSON("tabelle_test.json", testTable);
+        if (!result.success) console.error("Error saving:", result.error);
+    };
+    
     function getData(table, subtable) {
         const t = testTable[table];
         if (t && typeof t === "object" && !Array.isArray(t)) {
@@ -89,10 +114,13 @@ export default function Table({ onCellClick ,onChangeSend }) {
                 headerSort: false,
                 hozAlign: "center",
                 headerHozAlign: "center",
-                editor: isEditing ? "input" : false,
+                editor: false,
+                cellEdited: writeJSON,
                 cellClick: (e, cell) => {
-                    onCellClick({cell: cell});
-                    setSelectedCell(cell);
+                    if(!isEditingRef.current){
+                        onCellClick({cell: cell});
+                        setSelectedCell(cell);
+                    }
                 }
                 })),
             ],
@@ -108,14 +136,27 @@ export default function Table({ onCellClick ,onChangeSend }) {
         }, []); 
 
 
+    // Per editare le celle
+    useEffect(() => {
+        if (!tableRef.current) return;
+        isEditingRef.current = isEditing;
+    
+        tableRef.current.getColumns().forEach((col) => {
+          if (col.getField().startsWith("age")) {
+            col.updateDefinition({ editor: isEditing ? "input" : false });
+          }
+        });
+    
+      }, [isEditing]);
+
     // Aggiorna tabulator quando l'utente cambia la tabella o la sottotabella
     useEffect(() => {
+        setSelectedCell(null);
         if (!tableRef.current) return;
         tableRef.current.replaceData(
             getData(selectedTable, selectedSubtable)
         );
     }, [selectedTable, selectedSubtable]);
-
 
     // Aggiorna la sottotabella quando l'utente cambia la tabella principale
     useEffect(() => {
@@ -129,12 +170,7 @@ export default function Table({ onCellClick ,onChangeSend }) {
         }
     }, [selectedTable]);
 
-    useEffect(() => {
-        setSelectedCell(null);
-    }, [selectedTable, selectedSubtable])
-
     const toggleEdit = () => setIsEditing((prev) => !prev);
-
 
     return(
         <div className="table-page">
@@ -166,7 +202,6 @@ export default function Table({ onCellClick ,onChangeSend }) {
                         </select>
                     ) : null}
 
-
                     {/* Renderizza export solo in modalità sviluppatore */}
                     {settingsJson.dev ? 
                     <div>
@@ -184,7 +219,6 @@ export default function Table({ onCellClick ,onChangeSend }) {
                             <label>Scolarità: {selectedCell.getRow().getData().scolarità}</label>
                         </div> : null}
             </div>
-
             <div className="table-container">
                 <div ref={containerRef} />
             </div>
