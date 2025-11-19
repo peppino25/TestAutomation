@@ -1,4 +1,5 @@
-import { app, ipcMain, BrowserWindow } from "electron";
+import { app, ipcMain, BrowserWindow, dialog } from "electron";
+import { checkForUpdates } from "./functions/updateChecker";
 import dotenv from "dotenv"
 import fs from "fs";
 import path from "path";
@@ -37,7 +38,20 @@ function createWindow() {
     win.loadFile(indexPath);
   }
 }
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  ipcMain.handle("get-app-version", () => {
+    return app.getVersion();
+  });
+
+  ipcMain.handle("update-checker", async(event, localVersion, user, repo) => {
+    const updateInfo = await checkForUpdates(
+    localVersion,
+    user,
+    repo
+  )
+  if(updateInfo) return updateInfo;
+  });
+
   createWindow();
 
   function resolveResourcePath(jsonFileName) {
@@ -68,6 +82,7 @@ app.whenReady().then(() => {
       console.error("Error reading JSON:", err);
       return { success: false, error: err.message };
     }
+
   });
 
   // 🧩 Now win is visible here

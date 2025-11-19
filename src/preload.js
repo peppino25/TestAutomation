@@ -8,6 +8,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   readJSON: (jsonFileName) => {
     return ipcRenderer.invoke('read-json-file', jsonFileName);
   },
+  updateChecker: (localVersion, user, repo) => {
+    return ipcRenderer.invoke('update-checker', localVersion, user, repo);
+  },
+  getAppVersion: () => {
+    return ipcRenderer.invoke('get-app-version');
+  },
   minimize: () => ipcRenderer.send('minimize'),
   maximize: () => ipcRenderer.send('maximize'),
   close: () => ipcRenderer.send('close')

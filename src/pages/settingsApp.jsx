@@ -5,6 +5,28 @@ export default function Settings() {
   // Local state that mirrors the JSON file
   const [settings, setSettings] = useState(json);
 
+  const [isOutdated, setIsOutdated] = useState(false);
+
+  useEffect(() => {
+    async function runUpdateCheck() {
+      const version = await window.electronAPI.getAppVersion();
+
+      const res = await window.electronAPI.updateChecker(
+        version,
+        "peppino25",
+        "TestAutomation"
+      );
+      // Ritorna version, name e notes
+      return res;
+    }
+
+    const update = runUpdateCheck();
+
+    if (update) {
+      setIsOutdated(true);
+    }
+  }, [])
+
   // Function to save new settings to disk via Electron IPC
   const writeJSON = async (newSettings) => {
     const result = await window.electronAPI.saveJSON("settings.json", newSettings);
