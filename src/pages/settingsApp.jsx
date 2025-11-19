@@ -21,7 +21,6 @@ export default function Settings() {
   return (
     <div style={{ padding: "20px" }}>
       <h2>Impostazioni</h2>
-      {/*
       <label>
         <input
           type="checkbox"
@@ -32,7 +31,6 @@ export default function Settings() {
         Abilita modalità sviluppatore
       </label>
       <br />
-      */}
       <label>
         <input
           type="checkbox"

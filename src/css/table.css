@@ -26,7 +26,13 @@
 .table-toolbar {
   display: flex;
   margin-bottom: 16px;
+  align-items: center;
   background: #f8f9fa;
+  gap: 10px;
+}
+
+.table-toolbar > *:first-child {
+  margin-right: -10px; /* cancels the gap that flex creates */
 }
 
 .table-controls {

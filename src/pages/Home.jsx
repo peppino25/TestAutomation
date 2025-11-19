@@ -8,7 +8,11 @@ export default function Home() {
   const [tableName, setTableName] = useState(null);
   const [subtableName, setSubtableName] = useState(null);
   const [punteggi, setPunteggi] = useState(null);
-  const [form, setForm] = useState({ nome: "", cognome: "", punteggio: "" });
+  const [form, setForm] = useState({
+    nome: "",
+    cognome: "",
+    punteggio: null,
+  });
 
   const [punteggiArray, setPunteggiArray] = useState([]);
   const [punteggioEquivalente, setPunteggioEquivalente] = useState(null);
@@ -16,11 +20,18 @@ export default function Home() {
   // Funzione che server per gestire gli input dei form
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+
+    setForm(prev => ({
+      ...prev,
+      [name]: name === "punteggio"
+        ? (value === "" ? null : Number(value))   // convert automatically
+        : value
+    }));
   }
 
+
   useEffect(() => {
-    if (!punteggioEquivalente == null) return;
+    if ((!punteggioEquivalente) == null) return;
 
   }, [punteggioEquivalente]);
 
@@ -79,19 +90,6 @@ export default function Home() {
       }
     }
   }, [cell, form.punteggio])
-  
-
-  useEffect(() => {
-    if (!cell) return;
-
-    const patientInfo = {
-      nome: form.nome,
-      cognome: form.cognome,
-      eta: cell ? cell.getField().slice(3) : "",
-      punteggio_grezzo: form.punteggio,
-    }
-
-  }, [cell, form]);
 
   // Reset al cambio di test
   useEffect(() => {
@@ -130,7 +128,7 @@ export default function Home() {
           <input
             name="punteggio"
             type="number"
-            value={form.punteggio}
+            value={form.punteggio ?? ""}
             onChange={handleChange}
           />
         </label>
