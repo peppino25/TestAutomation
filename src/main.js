@@ -1,11 +1,11 @@
 import { app, ipcMain, BrowserWindow, dialog } from "electron";
 import { checkForUpdates } from "./functions/updateChecker";
-import Store from "electron-store";
 import dotenv from "dotenv"
+import { aiRequestHandler } from "./functions/aiRequestHandler.js";
 import fs from "fs";
+import store from "./functions/store.js";
 import path from "path";
 
-const store = new Store({ encryptionKey: "antoninocannavacciuolo"});
 dotenv.config();
 
 const isDev = process.env.MODE === "development";
@@ -46,6 +46,10 @@ app.whenReady().then(async () => {
     return app.getVersion();
   });
 
+  ipcMain.handle("run-ai", async (event, model, patientInfo) => {
+    return await aiRequestHandler(model, patientInfo);
+  })
+
   ipcMain.handle("update-checker", async(event, localVersion, user, repo) => {
     const updateInfo = await checkForUpdates(
     localVersion,
@@ -57,7 +61,6 @@ app.whenReady().then(async () => {
   ipcMain.handle("save-api-key", (event, key) => {
     store.set("apiKey", key);
   });
-
 
   ipcMain.handle("get-api-key", () => {
     return store.get("apiKey", "");

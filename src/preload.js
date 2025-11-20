@@ -18,5 +18,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   maximize: () => ipcRenderer.send('maximize'),
   close: () => ipcRenderer.send('close'),
   saveApiKey: (key) => ipcRenderer.invoke("save-api-key", key),
-  getApiKey: () => ipcRenderer.invoke("get-api-key")
+  getApiKey: () => ipcRenderer.invoke("get-api-key"),
+  runAi: (model, patientInfo) => ipcRenderer.invoke("run-ai", model,patientInfo)
 });

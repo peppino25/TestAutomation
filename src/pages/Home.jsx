@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Table from "../components/Table.jsx";
 import PTable from "../components/PTable.jsx";
 import "../css/home.css";
@@ -16,6 +17,9 @@ export default function Home() {
 
   const [punteggiArray, setPunteggiArray] = useState([]);
   const [punteggioEquivalente, setPunteggioEquivalente] = useState(null);
+
+  
+  const navigate = useNavigate(); 
 
   // Funzione che server per gestire gli input dei form
   function handleChange(e) {
@@ -153,6 +157,9 @@ export default function Home() {
               <h1 style={{marginTop: "0px"}}>Risultato</h1>
               <div style={{backgroundColor: "cyan"}}>
                 <label>Punteggio Equivalente: {punteggioEquivalente}</label>
+                <button onClick={() => {
+                  navigate("/ai-response")
+                }}>Ai</button>
               </div>
             </div>
           )}

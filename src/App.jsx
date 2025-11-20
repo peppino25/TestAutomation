@@ -2,6 +2,7 @@ import { HashRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Home from "./pages/Home.jsx";
 import Settings from "./pages/settingsApp.jsx";
+import RispostaAI from "./pages/AiResponse.jsx";
 import "./css/app.css";
 
 export default function App() {
@@ -46,12 +47,14 @@ export default function App() {
       <div className="menu-bar">
         <NavLink to="/" className={({ isActive }) => "button" + (isActive ? " active" : "")}>Home</NavLink>
         <NavLink to="/settings" className={({ isActive }) => "button" + (isActive ? " active" : "")}>Impostazioni</NavLink>
+        <NavLink to="/ai-response" className={({ isActive }) => "button" + (isActive? " active" : "")}>Risposta AI</NavLink>
       </div>
 
       <div className="page-content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/ai-response" element={<RispostaAI />} />
         </Routes>
       </div>
     </Router>
