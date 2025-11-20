@@ -46,15 +46,15 @@ export default function App() {
       <Router>
       <div className="menu-bar">
         <NavLink to="/" className={({ isActive }) => "button" + (isActive ? " active" : "")}>Home</NavLink>
-        <NavLink to="/settings" className={({ isActive }) => "button" + (isActive ? " active" : "")}>Impostazioni</NavLink>
         <NavLink to="/ai-response" className={({ isActive }) => "button" + (isActive? " active" : "")}>Risposta AI</NavLink>
+        <NavLink to="/settings" className={({ isActive }) => "button" + (isActive ? " active" : "")}>Impostazioni</NavLink> 
       </div>
 
       <div className="page-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/settings" element={<Settings />} />
           <Route path="/ai-response" element={<RispostaAI />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
     </Router>

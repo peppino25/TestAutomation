@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Table from "../components/Table.jsx";
 import PTable from "../components/PTable.jsx";
+import Settings from "../../resources/settings.json"
 import "../css/home.css";
 
 export default function Home() {
@@ -12,11 +13,15 @@ export default function Home() {
   const [form, setForm] = useState({
     nome: "",
     cognome: "",
+    descrizione: "",
     punteggio: null,
   });
 
   const [punteggiArray, setPunteggiArray] = useState([]);
   const [punteggioEquivalente, setPunteggioEquivalente] = useState(null);
+  const [punteggioCorr, setPunteggioCorr] = useState(null);
+
+  const [sign, setSign] = useState(null);
 
   
   const navigate = useNavigate(); 
@@ -70,11 +75,15 @@ export default function Home() {
     let cellValue = String(cell.getValue()).trim();
     // Estrae il segno da cellValue
     let sign = cellValue.startsWith("-") ? "-" : "+";
+
+    setSign(sign);
     // Rimuove il segno negativo da cellValue
     if(sign === "-") cellValue = cellValue.slice(1);
     const cellValueNum = parseFloat(cellValue);
     // Calcola il punteggioCorretto, ovvero (punteggio grezzo - correzione)
     const punteggioCorretto = sign === "-" ? punteggio - cellValueNum : punteggio + cellValueNum;
+
+    setPunteggioCorr(punteggioCorretto);
 
     // Evita che il punteggio equivalente sia negativo
     if (punteggioCorretto < 0){
@@ -97,7 +106,7 @@ export default function Home() {
 
   // Reset al cambio di test
   useEffect(() => {
-    setForm({nome: "", cognome: "", punteggio: ""});
+    setForm({nome: "", cognome: "", descrizione: "",punteggio: ""});
     setPunteggioEquivalente(null);
     setCell(null);
 
@@ -113,7 +122,7 @@ export default function Home() {
             name="nome"
             value={form.nome}
             onChange={handleChange}
-            placeholder="Opzionale"
+            placeholder="Obbligatorio per l'AI"
           />
         </label>
 
@@ -123,7 +132,7 @@ export default function Home() {
             name="cognome"
             value={form.cognome}
             onChange={handleChange}
-            placeholder="Opzionale"
+            placeholder="Obbligatorio per l'AI"
           />
         </label>
 
@@ -154,12 +163,36 @@ export default function Home() {
           <PTable incoming_data={{punteggi: punteggi}}/>
           {punteggioEquivalente != null && (
             <div className="punteggio-final">
-              <h1 style={{marginTop: "0px"}}>Risultato</h1>
-              <div style={{backgroundColor: "cyan"}}>
-                <label>Punteggio Equivalente: {punteggioEquivalente}</label>
-                <button onClick={() => {
-                  navigate("/ai-response")
-                }}>Ai</button>
+              <h1 className="pf-title">Risultato</h1>
+
+              <div className="pf-content">
+                <div className="pf-row">
+                  <span className="pf-label">Calcolo:</span>
+                  <span className="pf-value">
+                    {form.punteggio} {sign} {cell.getValue()[0] === "-"? cell.getValue().slice(1) : cell.getValue()} = {punteggioCorr}
+                  </span>
+                </div>
+
+                <div className="pf-row">
+                  <span className="pf-label">Punteggio Equivalente:</span>
+                  <span className="pf-important">{punteggioEquivalente}</span>
+                </div>
+                {Settings.aiusage && (
+                  <div className="last-row">
+                    <input placeholder="Piccola descrizione paziente per resoconto ai (opzionale)" style={{padding: "5px"}} onChange={handleChange} name="descrizione" value={form.descrizione}/>
+                    <button disabled={!(form.nome && form.cognome)} className="pf-ai-btn" onClick={() => navigate("/ai-response", {
+                      state: {
+                        "form": form,
+                        "PE": punteggioEquivalente,
+                        "test": tableName,
+                        "subTest": subtableName,
+                        "model": Settings.model
+                      }
+                    })}>
+                      Genera resoconto AI
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}

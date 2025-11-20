@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import json from "../../resources/settings.json";
+import "../css/settings.css"
 
 export default function Settings() {
   const [settings, setSettings] = useState(json);
-  const [apiKey, setApiKey] = useState(""); // <-- local state
+  const [apiKey, setApiKey] = useState("");
   const [updateInfo, setUpdateInfo] = useState(null);
   const [isOutdated, setIsOutdated] = useState(false);
 
@@ -111,13 +112,10 @@ export default function Settings() {
 
       {isOutdated && (
         <div className="update-info">
-          <label>Per scaricare l'aggiornamento bisognerà cliccare sul link in basso. Il link porterà al sito github nella pagina della nuova versione,
-                  non servirà fare altro che cliccare su "versione mac os", e partirà il download del file che dovrà rimpiazzare la vecchia applicazione.
+          <label>{updateInfo.notes}
           </label>
-          
-
-
-
+          <br></br>
+          <a href={updateInfo.url} target="_blank" className="button" style={{color: "blue"}}>Link per l'aggiornamento</a>
         </div>
       )}
     </div>
