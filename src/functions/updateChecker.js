@@ -9,7 +9,8 @@ async function fetchLatestRelease(user, repo) {
     return {
         version: release.tag_name,
         name: release.name,
-        notes: data.body,
+        notes: release.body,
+        url: release.html_url
     };
 }
 

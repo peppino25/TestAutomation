@@ -4,6 +4,7 @@ import json from "../../resources/settings.json";
 export default function Settings() {
   const [settings, setSettings] = useState(json);
   const [apiKey, setApiKey] = useState(""); // <-- local state
+  const [updateInfo, setUpdateInfo] = useState(null);
   const [isOutdated, setIsOutdated] = useState(false);
 
   // Load update check + API key
@@ -15,7 +16,11 @@ export default function Settings() {
         "peppino25",
         "TestAutomation"
       );
-      if (update) setIsOutdated(true);
+      if (update){
+        setIsOutdated(true);
+        setUpdateInfo(update);
+      };
+      
 
       const key = await window.electronAPI.getApiKey(); 
       if (key) setApiKey(key);
@@ -100,6 +105,19 @@ export default function Settings() {
             <option>gpt-5-nano</option>
             <option>gpt-4o-mini</option>
           </select>
+        </div>
+      )}
+
+
+      {isOutdated && (
+        <div className="update-info">
+          <label>Per scaricare l'aggiornamento bisognerà cliccare sul link in basso. Il link porterà al sito github nella pagina della nuova versione,
+                  non servirà fare altro che cliccare su "versione mac os", e partirà il download del file che dovrà rimpiazzare la vecchia applicazione.
+          </label>
+          
+
+
+
         </div>
       )}
     </div>
